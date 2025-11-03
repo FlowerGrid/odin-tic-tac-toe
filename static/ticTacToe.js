@@ -22,38 +22,56 @@
 // Object to control the flow of the game
 // start game, make board, create players, determine whose turn, let player make a move
 
-const theGame = (function game() {
+const gm = (function game() {
+
+    const player1 = createPlayer('Player 1', 'X', true);
+    const player2 = createPlayer('Player 2', 'O', false);
+    const players = [player1, player2]
+    const board = {
+        spaces: [null, null, null, null, null, null, null, null]
+    };
 
 
-    function createPlayer(name, mark) {
-
+    function createPlayer(name, mark, isTurn) {
         name = name;
         mark = mark;
-        score = 0;
-        isTurn = false;
+        isTurn = isTurn;
 
-        function takeTurn(space) {
-            if(board.spaces[space] !== null) {
-                board.spaces[space] = mark;
+        let score = 0
+
+        return {name, mark, score, isTurn}
+    }
+
+
+    function toggleTurn() {
+        for (let player of players) {
+            player.isTurn = !player.isTurn;
+        }
+        
+    }
+
+
+    function takeTurn(space) {
+        for (let player of players) {
+            if (player.isTurn === true) {
+                if(board.spaces[space] === null) {
+                board.spaces[space] = player.mark;
+                }
             }
         }
-        return {name, mark, score, isTurn, takeTurn}
+        toggleTurn()
     }
 
-    function createGame() {
-        const player1 = createPlayer('Player 1', 'X');
-        const player2 = createPlayer('Player 2', 'O')
-        const players = [player1, player2]
-        const board = () => {
-            return {
-                spaces: [null, null, null, null, null, null, null, null]
-            }
-        };
-        return {player1, player2, board}
+
+    function sayName() {
+        alert(player1.name)
     }
 
-    return {createGame}
+
+    function revealBoard() {
+        console.log(board.spaces)
+    }
+
+
+    return {takeTurn, sayName, revealBoard}
 })();
-
-
-
