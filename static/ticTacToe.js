@@ -17,9 +17,36 @@ function game() {
     const player2 = createPlayer('Player 2', 'O', false);
     const players = [player1, player2]
     let currentPlayer = player1
-    const gameBoard = {
-        spaces: []
-    };
+
+
+// Ordered to favor center indices as having a higher chance of being included
+// in a winning pattern
+const winStates = [
+    [1, 4, 7],
+    [3, 4, 5],
+    [0, 4, 8],
+    [2, 4, 6],
+    [0, 1, 2],
+    [6, 7, 8],
+    [0, 3, 6],
+    [2, 5, 8]
+];
+    
+    const gameBoard = (function () {
+        spaces = []
+
+        const show = () => {return [...spaces]}
+        
+        const addMark = (index) => {
+            spaces[index] = currentPlayer.getMark()
+        }
+        const checkIndex = (index) => {
+            return spaces[index]
+        }
+        const size = () => {return spaces.length}
+
+        return {show, addMark, checkIndex, size}
+    })();
     // vertical wins    [0, 1, 2], [3, 4, 5], [6, 7, 8]
     // horizontal wins  [0, 3, 6], [1, 4, 7], [2, 5, 8]
     // diagonal wins    [0, 4, 8], [2, 4, 6]
@@ -35,38 +62,40 @@ function game() {
         const getName = () => {return name}
         const getMark = () => {return mark}
         const getScore = () => {return score}
+        const getTurn = () => {return isTurn}
 
         const setScore = () => {return score++}
+        const setTurn = () => {return isTurn = !isTurn}
+        
 
-        return {getName, getMark, getScore, setScore, isTurn}
+        return {getName, getMark, getScore, setScore, getTurn, setTurn}
     }
 
 
     function toggleTurn() {
         for (let player of players) {
-            player.isTurn = !player.isTurn;
-            if (player.isTurn === true){
+            player.setTurn();
+            if (player.getTurn()){
                 currentPlayer = player;
             } 
-        }
-        
+        } 
     }
 
     // TODO: alert to the player when they pick an occupied space and let them go again
     function takeTurn(space) {
-        for (let player of players) {
-            if (player.isTurn === true) {
-                if(gameBoard.spaces[space] || space > 8) {
-                    alert("Please choose an empty space")
-                    revealBoard()
-                    displayPlayer()
-                    return                    
-                } else {
-                    gameBoard.spaces[space] = player.getMark();
-                }
-            }
+
+        if(gameBoard.checkIndex(space) || space > 8) {
+            alert("Please choose an empty space")
+            revealBoard()
+            displayPlayer()
+            return                    
+        } else {
+            gameBoard.addMark(space);
         }
-        // checkWinState()
+
+        if (checkWinState()) {
+            win()
+        }
         toggleTurn()
         revealBoard()
         displayPlayer()
@@ -74,23 +103,31 @@ function game() {
 
 
     function revealBoard() {
-        console.log(gameBoard.spaces)
-        console.log(gameBoard.spaces.length)
+        // console.log(gameBoard.spaces)
+        console.log(gameBoard.show())
+
     }
 
 
     function checkWinState() {
-        // vertical wins    [0, 1, 2], [3, 4, 5], [6, 7, 8]
-        // horizontal wins  [0, 3, 6], [1, 4, 7], [2, 5, 8]
-        // diagonal wins    [0, 4, 8], [2, 4, 6]
-        if ((gameBoard.spaces.length >= 3)
-            && ((gameBoard.spaces[0] === gameBoard.spaces[1] && gameBoard.spaces[1] === gameBoard.spaces[2])
-            || (gameBoard.spaces[3] === gameBoard.spaces[4] && gameBoard.spaces[4] === gameBoard.spaces[5])
-            || (gameBoard.spaces[6] === gameBoard.spaces[7] && gameBoard.spaces[7] === gameBoard.spaces[8]))
-        ) {
-            alert(`${currentPlayer.getName()} wins!`)
-            currentPlayer.setScore()
+        let boardState = gameBoard.show()
+        for (state of winStates) {
+            const [i, j, k] = state;
+            let slot1 = boardState[i];
+            let slot2 = boardState[j];
+            let slot3 = boardState[k];
+            if (slot1 && slot1 === slot2 && slot2 === slot3) {
+                return true
+            }
+
         }
+        return false
+    }
+
+
+    function win() {
+        alert(`${currentPlayer.getName()} wins!`)
+        currentPlayer.setScore()
     }
 
 
