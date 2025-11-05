@@ -19,18 +19,18 @@ function game() {
     let currentPlayer = player1
 
 
-// Ordered to favor center indices as having a higher chance of being included
-// in a winning pattern
-const winStates = [
-    [1, 4, 7],
-    [3, 4, 5],
-    [0, 4, 8],
-    [2, 4, 6],
-    [0, 1, 2],
-    [6, 7, 8],
-    [0, 3, 6],
-    [2, 5, 8]
-];
+    // Ordered to favor center indices as having a higher chance of being included
+    // in a winning pattern
+    const winStates = [
+        [1, 4, 7],
+        [3, 4, 5],
+        [0, 4, 8],
+        [2, 4, 6],
+        [0, 1, 2],
+        [6, 7, 8],
+        [0, 3, 6],
+        [2, 5, 8]
+    ];
     
     const gameBoard = (function () {
         spaces = []
