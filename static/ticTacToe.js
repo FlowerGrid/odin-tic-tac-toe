@@ -11,11 +11,17 @@
 // Object to control the flow of the game
 // start game, make board, create players, determine whose turn, let player make a move
 
+
+const gameBoardArrayElement = document.querySelector('#game-board-array');
+gameBoardArrayElement.textContent = 'A game';
+
 function game() {
 
     const player1 = createPlayer('Player 1', 'X', true);
     const player2 = createPlayer('Player 2', 'O', false);
     const players = [player1, player2]
+
+    // TODO: write a coin toss mechanic to determine who goes first
     let currentPlayer = player1
 
 
@@ -38,7 +44,12 @@ function game() {
         const show = () => {return [...spaces]}
         
         const addMark = (index) => {
-            spaces[index] = currentPlayer.getMark()
+            let playerMark = currentPlayer.getMark();
+            spaces[index] = playerMark;
+            
+            // Show on webpage
+            // let spaceElement = document.querySelector(`#marker-space${index}`);
+            // spaceElement.textContent = playerMark;
         }
         const checkIndex = (index) => {
             return spaces[index]
@@ -53,10 +64,6 @@ function game() {
 
 
     function createPlayer(name, mark, isTurn) {
-        name = name;
-        mark = mark;
-        isTurn = isTurn;
-
         let score = 0
 
         const getName = () => {return name}
@@ -66,7 +73,6 @@ function game() {
 
         const setScore = () => {return score++}
         const setTurn = () => {return isTurn = !isTurn}
-        
 
         return {getName, getMark, getScore, setScore, getTurn, setTurn}
     }
@@ -81,7 +87,7 @@ function game() {
         } 
     }
 
-    // TODO: alert to the player when they pick an occupied space and let them go again
+
     function takeTurn(space) {
 
         if(gameBoard.checkIndex(space) || space > 8) {
@@ -91,6 +97,7 @@ function game() {
             return                    
         } else {
             gameBoard.addMark(space);
+ 
         }
 
         if (checkWinState()) {
@@ -99,13 +106,21 @@ function game() {
         toggleTurn()
         revealBoard()
         displayPlayer()
+
+        // Update the gameboard on the site
+        let boardState = gameBoard.show();
+        gameBoardArrayElement.textContent = boardState;
+        for (let i = 0; i < boardState.length; i++){
+            if (boardState[i]) {
+                let boardSpaceElement = document.querySelector(`#marker-space${i}`);
+                boardSpaceElement.textContent = boardState[i];
+            }
+        }
     }
 
 
     function revealBoard() {
-        // console.log(gameBoard.spaces)
         console.log(gameBoard.show())
-
     }
 
 
