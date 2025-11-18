@@ -49,7 +49,7 @@ html, body {
 .players-section {
     display: flex;
     flex-direction: column;
-    font-size: 32pt;
+    font-size: 56pt;
     align-self: stretch;
     gap: 2rem;
 }
@@ -62,7 +62,14 @@ html, body {
 
 .player-name {
     font-family: "Slabo 27px", serif;
+}
+
+#player1 {
     color: #821d30;
+}
+
+#player2 {
+    color: #41639b;
 }
 
 .player-score {
@@ -78,20 +85,37 @@ html, body {
 }
 
 #game-panel {
+    background-color: white;
     display: flex;
     justify-content: center;
     flex-direction: column;
+    align-items: center;
 }
 
 #game-board {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, 180px);
+    grid-template-rows: repeat(3, 180px);
     gap: 1rem;
-    min-width: 80%;
-    background-color: green;
+    background-color: black;
     margin: 2rem;
-    padding: 1rem;
     box-sizing: border-box;
+}
+
+.marker-space {
+    font-family: "Varela Round", sans-serif;
+    font-size: 160px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.x-marker {
+    color: #821d30;
+}
+
+.o-marker {
+    color: #41639b;
 }
 
 .marker-space {
