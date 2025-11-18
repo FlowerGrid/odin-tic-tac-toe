@@ -1,8 +1,103 @@
-html {
+html, body {
+    font-family: "Roboto";
     background-color: aqua;
+    padding: 0;
+    margin: 0;
+}
+
+#main-frame {
+    display: grid;
+    grid-template-columns: 2fr 5fr;
+    height: 100vh;
+}
+
+#menu-panel {
+    background-color: mediumaquamarine;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.menu-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.control-item {
+    font-family: "Varela Round", sans-serif;
+    font-size: 14pt;
+    text-align: center;
+    border-radius: 15px;
+    background-color: #821d30;
+    color: white;
+    padding: 24px 80px;
+    border: solid 2px #fdb73e;
+    cursor: default;
+}
+
+.players-section {
+    display: flex;
+    flex-direction: column;
+    font-size: 32pt;
+    align-self: stretch;
+    gap: 2rem;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem;
+}
+
+.player-name {
+    font-family: "Slabo 27px", serif;
+    color: #821d30;
+}
+
+.player-score {
+    text-align: right;
+}
+
+#footer {
+    font-size: 10pt;
+    text-align: center;
+    color: white;
+    padding: .25rem;
+    margin-top: 13.333px;
+}
+
+#game-panel {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 #game-board {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    min-width: 80%;
+    background-color: green;
+    margin: 2rem;
+    padding: 1rem;
+    box-sizing: border-box;
 }
+
+.marker-space {
+    background-color: white;
+    width: 1fr;
+    height: 1fr;
+
+}
+

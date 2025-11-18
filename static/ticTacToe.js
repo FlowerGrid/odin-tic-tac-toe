@@ -12,8 +12,8 @@
 // start game, make board, create players, determine whose turn, let player make a move
 
 
-const gameBoardArrayElement = document.querySelector('#game-board-array');
-gameBoardArrayElement.textContent = 'A game';
+// const gameBoardArrayElement = document.querySelector('#game-board-array');
+// gameBoardArrayElement.textContent = 'A game';
 
 function game() {
 
@@ -109,7 +109,7 @@ function game() {
 
         // Update the gameboard on the site
         let boardState = gameBoard.show();
-        gameBoardArrayElement.textContent = boardState;
+        // gameBoardArrayElement.textContent = boardState;
         for (let i = 0; i < boardState.length; i++){
             if (boardState[i]) {
                 let boardSpaceElement = document.querySelector(`#marker-space${i}`);
