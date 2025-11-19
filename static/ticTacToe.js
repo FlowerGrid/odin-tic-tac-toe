@@ -12,18 +12,31 @@
 // - I need end game logic to end the game when a winstate is achieved or the 
 //   board has no more free spaces
 
-// Locate important html elements
-const newGameBtn = document.querySelector('#new-game-btn');
-const resetBtn = document.querySelector('#reset-btn');
-const gameBoardElement = document.querySelector('#game-board');
-const p1Element = document.querySelector('#player1');
-const p2Element = document.querySelector('#player2');
-
-gameBoardElement.addEventListener('click', (event) => {
-    let target = event.target;
-    let spaceIdx = target.dataset.spaceIdx;
-    gm.takeTurn(+spaceIdx)
-})
+// PUBSUB
+const pubsub = {
+  events: {},
+  subscribe: function (eventName, fn) {
+    this.events[eventName] = this.events[eventName] || [];
+    this.events[eventName].push(fn);
+  },
+  ounsubscribe: function(eventName, fn) {
+    if (this.events[eventName]) {
+      for (var i = 0; i < this.events[eventName].length; i++) {
+        if (this.events[eventName][i] === fn) {
+          this.events[eventName].splice(i, 1);
+          break;
+        }
+      };
+    }
+  },
+  publish: function (eventName, data) {
+    if (this.events[eventName]) {
+      this.events[eventName].forEach(function(fn) {
+        fn(data);
+      });
+    }
+  }
+};
 
 
 function game() {
@@ -57,11 +70,9 @@ function game() {
         const addMark = (index) => {
             let playerMark = currentPlayer.getMark();
             spaces[index] = playerMark;
-            
-            // Show on webpage
-            // let spaceElement = document.querySelector(`#marker-space${index}`);
-            // spaceElement.textContent = playerMark;
+            pubsub.publish('boardChanged', (spaces))
         }
+
         const checkIndex = (index) => {
             return spaces[index]
         }
@@ -115,27 +126,16 @@ function game() {
             return                    
         } else {
             gameBoard.addMark(space);
+            pubsub.publish('turnTaken', true)
         }
 
-        // ↓↓↓ Move this into a pub/sub ↓↓↓
-        // Update the gameboard on the site
-        let boardState = gameBoard.show();
-        // gameBoardArrayElement.textContent = boardState;
-        for (let i = 0; i < boardState.length; i++){
-            if (boardState[i]) {
-                let boardSpaceElement = document.querySelector(`#marker-space${i}`);
-                boardSpaceElement.classList.remove('x-marker', 'o-marker');
-                boardSpaceElement.classList.toggle(`${boardState[i]}-marker`);
-            }
-        }
-
-        if (checkWinState(boardState)) {
-            win()
-        } else {
-            toggleTurn()
-            revealBoard()
-            displayPlayer()
-        }
+        // if (checkWinState(boardState)) {
+        //     win()
+        // } else {
+        //     toggleTurn()
+        //     revealBoard()
+        //     displayPlayer()
+        // }
     }
 
 
@@ -155,7 +155,8 @@ function game() {
             let slot2 = boardState[j];
             let slot3 = boardState[k];
             if (slot1 && slot1 === slot2 && slot2 === slot3) {
-                return true
+                win();
+                pubsub.publish('win', currentPlayer);
             }
 
         }
@@ -171,9 +172,9 @@ function game() {
         // Disable click event on board
     }
 
-    function showScore(player) {
-        let 
-    }
+    // function showScore(player) {
+    //     let 
+    // }
 
 
     function displayPlayer() {
@@ -187,8 +188,58 @@ function game() {
         }
     }
 
+    pubsub.subscribe('spaceClicked', (space) => {
+        takeTurn(space);
+    });
+
+    pubsub.subscribe('turnTaken', (data) => {
+        checkWinState();
+        toggleTurn()
+    })
+
     return {takeTurn, revealBoard, showStats}
 }
 
-let gm = game()
 
+// newGameBtn.addEventListener('click', () => {
+//     gm = game()
+
+// })
+
+
+const uiManager = (function () {
+    // Locate important html elements
+    const newGameBtn = document.querySelector('#new-game-btn');
+    const resetBtn = document.querySelector('#reset-btn');
+    const gameBoardElement = document.querySelector('#game-board');
+    const p1Element = document.querySelector('#player1');
+    const p2Element = document.querySelector('#player2');
+
+    // Listenters
+    gameBoardElement.addEventListener('click', (event) => {
+    let target = event.target;
+    let spaceIdx = target.dataset.spaceIdx;
+    pubsub.publish("spaceClicked", spaceIdx)
+    return spaceIdx
+    })
+
+    const markSpace = (board) => {
+        for (let i = 0; i < board.length; i++){
+            if (board[i]) {
+                let boardSpaceElement = document.querySelector(`#marker-space${i}`);
+                boardSpaceElement.classList.remove('x-marker', 'o-marker');
+                boardSpaceElement.classList.toggle(`${board[i]}-marker`);
+            }
+        }};
+
+    pubsub.subscribe('boardChanged', (board) => {
+        markSpace(board)
+    });
+
+    return {markSpace}
+
+})();
+
+
+
+let gm = game()
