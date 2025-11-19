@@ -87,23 +87,22 @@ function game() {
 
     function createPlayer(name, playerNum, mark, isTurn) {
         let score = 0
-        let playerElement = document.querySelector(`#player${playerNum}`);
-        let playerNameElement = playerElement.querySelector('.player-name');
-        let playerScoreElement = playerElement.querySelector('.score');
 
         const getName = () => {return name}
         const getMark = () => {return mark}
         const getScore = () => {return score}
         const getTurn = () => {return isTurn}
+        const getPlayerNum = () => {return playerNum}
 
-        const setScore = () => {return score++}
+        const setScore = () => {
+            score++;
+            pubsub.publish('scoreUpdate', currentPlayer)
+            return score
+        }
         const setTurn = () => {return isTurn = !isTurn}
 
-        const updateScore = () => {
-            playerScoreElement.textContent = getScore();
-        }
 
-        return {getName, getMark, getScore, setScore, getTurn, setTurn}
+        return {getName, getMark, getScore, getPlayerNum, setScore, getTurn, setTurn}
     }
 
 
@@ -232,8 +231,18 @@ const uiManager = (function () {
             }
         }};
 
+    const updateScore = (player) => {
+        let playerNum = player.getPlayerNum();
+        let playerScore = document.querySelector(`#p${playerNum}-score`);
+        playerScore.textContent = player.getScore()
+    }
+
     pubsub.subscribe('boardChanged', (board) => {
         markSpace(board)
+    });
+
+    pubsub.subscribe('win', (player) => {
+        updateScore(player);
     });
 
     return {markSpace}
