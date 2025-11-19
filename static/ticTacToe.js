@@ -1,24 +1,35 @@
-// build game board as an array inside a gameBoard object
-// each space on the board is an index 0-8, and they contain either 'X', 'O', or null
-// each space should have an isFilled quality that determines whether or not you can play there.
-// Maybe that's just if it's null you can fill otherwise no
+// TODO:
+// - New game button resets the game board, doesn't effect scores
+// - Reset terminates the current game and creat4es a new game with new players
+//   and zeroes out scores
+// - Need to add event listeners to menu buttons and marker spaces
+// - Cllicking on a marker space indexes into that space on the board array and 
+//   fills it with that player's marker
+// - Need to display whose turn it is
+//   - I might highlight the player's name in the menu or simply write it above
+//     the game board
+// - Somehow need to let the players enter their own names
+// - I need end game logic to end the game when a winstate is achieved or the 
+//   board has no more free spaces
 
+// Locate important html elements
+const newGameBtn = document.querySelector('#new-game-btn');
+const resetBtn = document.querySelector('#reset-btn');
+const gameBoardElement = document.querySelector('#game-board');
+const p1Element = document.querySelector('#player1');
+const p2Element = document.querySelector('#player2');
 
-// players will be stored in objects
-// player have a name, and a marker. I suppose they can have a score as well
+gameBoardElement.addEventListener('click', (event) => {
+    let target = event.target;
+    let spaceIdx = target.dataset.spaceIdx;
+    gm.takeTurn(+spaceIdx)
+})
 
-
-// Object to control the flow of the game
-// start game, make board, create players, determine whose turn, let player make a move
-
-
-// const gameBoardArrayElement = document.querySelector('#game-board-array');
-// gameBoardArrayElement.textContent = 'A game';
 
 function game() {
 
-    const player1 = createPlayer('Player 1', 'X', true);
-    const player2 = createPlayer('Player 2', 'O', false);
+    const player1 = createPlayer('Player 1', 1, 'x', true);
+    const player2 = createPlayer('Player 2', 2, 'o', false);
     const players = [player1, player2]
 
     // TODO: write a coin toss mechanic to determine who goes first
@@ -39,7 +50,7 @@ function game() {
     ];
     
     const gameBoard = (function () {
-        spaces = []
+        let spaces = Array(9).fill(null);
 
         const show = () => {return [...spaces]}
         
@@ -63,8 +74,11 @@ function game() {
     // diagonal wins    [0, 4, 8], [2, 4, 6]
 
 
-    function createPlayer(name, mark, isTurn) {
+    function createPlayer(name, playerNum, mark, isTurn) {
         let score = 0
+        let playerElement = document.querySelector(`#player${playerNum}`);
+        let playerNameElement = playerElement.querySelector('.player-name');
+        let playerScoreElement = playerElement.querySelector('.score');
 
         const getName = () => {return name}
         const getMark = () => {return mark}
@@ -73,6 +87,10 @@ function game() {
 
         const setScore = () => {return score++}
         const setTurn = () => {return isTurn = !isTurn}
+
+        const updateScore = () => {
+            playerScoreElement.textContent = getScore();
+        }
 
         return {getName, getMark, getScore, setScore, getTurn, setTurn}
     }
@@ -97,35 +115,40 @@ function game() {
             return                    
         } else {
             gameBoard.addMark(space);
- 
         }
 
-        if (checkWinState()) {
-            win()
-        }
-        toggleTurn()
-        revealBoard()
-        displayPlayer()
-
+        // ↓↓↓ Move this into a pub/sub ↓↓↓
         // Update the gameboard on the site
         let boardState = gameBoard.show();
         // gameBoardArrayElement.textContent = boardState;
         for (let i = 0; i < boardState.length; i++){
             if (boardState[i]) {
                 let boardSpaceElement = document.querySelector(`#marker-space${i}`);
-                boardSpaceElement.textContent = boardState[i];
+                boardSpaceElement.classList.remove('x-marker', 'o-marker');
+                boardSpaceElement.classList.toggle(`${boardState[i]}-marker`);
             }
+        }
+
+        if (checkWinState(boardState)) {
+            win()
+        } else {
+            toggleTurn()
+            revealBoard()
+            displayPlayer()
         }
     }
 
 
     function revealBoard() {
-        console.log(gameBoard.show())
+        console.log(gameBoard.show());
     }
 
 
-    function checkWinState() {
-        let boardState = gameBoard.show()
+    function checkWinState(boardState) {
+        if(!boardState){
+            boardState = gameBoard.show()
+        }
+        
         for (state of winStates) {
             const [i, j, k] = state;
             let slot1 = boardState[i];
@@ -141,8 +164,15 @@ function game() {
 
 
     function win() {
-        alert(`${currentPlayer.getName()} wins!`)
-        currentPlayer.setScore()
+        // alert(`${currentPlayer.getName()} wins!`)
+        console.log(`${currentPlayer.getName()} wins!`);
+        currentPlayer.setScore();
+        // TODO:
+        // Disable click event on board
+    }
+
+    function showScore(player) {
+        let 
     }
 
 
@@ -161,3 +191,4 @@ function game() {
 }
 
 let gm = game()
+

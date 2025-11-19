@@ -3,6 +3,12 @@ html, body {
     background-color: aqua;
     padding: 0;
     margin: 0;
+    cursor: default;
+}
+
+h1 {
+    font-family: "Varela Round", sans-serif;
+    font-size: 36pt;
 }
 
 #main-frame {
@@ -23,7 +29,7 @@ html, body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   width: 100%;
 }
@@ -40,24 +46,30 @@ html, body {
     text-align: center;
     border-radius: 15px;
     background-color: #821d30;
-    color: white;
+    color: #F5F5F5;
     padding: 24px 80px;
     border: solid 2px #fdb73e;
-    cursor: default;
 }
 
 .players-section {
     display: flex;
     flex-direction: column;
-    font-size: 56pt;
     align-self: stretch;
-    gap: 2rem;
+    gap: .5rem;
+}
+
+.players-section p {
+    margin: 0;
+    font-size: 16pt;
+    padding: 0 1rem;
 }
 
 .player {
+    font-size: 30pt;
     display: flex;
     flex-direction: column;
     padding: 0 1rem;
+    margin-bottom: 1rem;
 }
 
 .player-name {
@@ -79,13 +91,13 @@ html, body {
 #footer {
     font-size: 10pt;
     text-align: center;
-    color: white;
+    color: #F5F5F5;
     padding: .25rem;
     margin-top: 13.333px;
 }
 
 #game-panel {
-    background-color: white;
+    background-color: #F5F5F5;
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -103,6 +115,7 @@ html, body {
 }
 
 .marker-space {
+    background-color: #F5F5F5;
     font-family: "Varela Round", sans-serif;
     font-size: 160px;
     display: flex;
@@ -110,18 +123,19 @@ html, body {
     align-items: center;
 }
 
+.x-marker::after {
+    content: "X";
+}
+
 .x-marker {
     color: #821d30;
 }
 
-.o-marker {
-    color: #41639b;
+.o-marker::after {
+    content: "O";
 }
 
-.marker-space {
-    background-color: white;
-    width: 1fr;
-    height: 1fr;
-
+.o-marker {
+    color: #41639b;
 }
 

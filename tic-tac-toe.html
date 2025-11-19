@@ -17,8 +17,10 @@
   <div id="main-frame">
     <!-- menu -->
     <div id="menu-panel">
+      <h1 id="title">Odin Tic-Tac-Toe</h1>
       <div class="menu-content">
         <div class="players-section">
+          <p>Score</p>
           <div class="player" id="player1">
             <div class="player-name">Player 1</div>
             <div class="player-score">0</div>
@@ -29,8 +31,8 @@
           </div>
         </div>
         <div class="game-controls">
-          <div class="control-item">New Game</div>
-          <div class="control-item">Reset</div>
+          <div class="control-item" id="new-game-btn">New Game</div>
+          <div class="control-item" id="reset-btn">Reset</div>
         </div>
       </div>
       <p id="footer">© Flowergrid Coding 2025</p>
@@ -39,15 +41,15 @@
     <div id="game-panel">
       <!-- <div id="game-board-array"></div> -->
       <div id="game-board">
-        <div id="marker-space0" class="marker-space x-marker">X</div>
-        <div id="marker-space1" class="marker-space o-marker">O</div>
-        <div id="marker-space2" class="marker-space x-marker">X</div>
-        <div id="marker-space3" class="marker-space o-marker">O</div>
-        <div id="marker-space4" class="marker-space">X</div>
-        <div id="marker-space5" class="marker-space">O</div>
-        <div id="marker-space6" class="marker-space">X</div>
-        <div id="marker-space7" class="marker-space">O</div>
-        <div id="marker-space8" class="marker-space">X</div>
+        <div id="marker-space0" data-space-idx="0" class="marker-space"></div>
+        <div id="marker-space1" data-space-idx="1" class="marker-space"></div>
+        <div id="marker-space2" data-space-idx="2" class="marker-space"></div>
+        <div id="marker-space3" data-space-idx="3" class="marker-space"></div>
+        <div id="marker-space4" data-space-idx="4" class="marker-space"></div>
+        <div id="marker-space5" data-space-idx="5" class="marker-space"></div>
+        <div id="marker-space6" data-space-idx="6" class="marker-space"></div>
+        <div id="marker-space7" data-space-idx="7" class="marker-space"></div>
+        <div id="marker-space8" data-space-idx="8" class="marker-space"></div>
       </div>
     </div>
   </div>
