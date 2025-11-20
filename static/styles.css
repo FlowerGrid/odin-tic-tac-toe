@@ -23,6 +23,7 @@ h1 {
     flex-direction: column;
     align-items: center;
     height: 100%;
+    padding: 0 1rem;
 }
 
 .menu-content {
@@ -49,6 +50,7 @@ h1 {
     color: #F5F5F5;
     padding: 24px 80px;
     border: solid 2px #fdb73e;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
 .players-section {
@@ -61,7 +63,7 @@ h1 {
 .players-section p {
     margin: 0;
     font-size: 16pt;
-    padding: 0 1rem;
+    /* padding: 0 1rem; */
 }
 
 .player {
@@ -139,3 +141,10 @@ h1 {
     color: #41639b;
 }
 
+#winner-announcement {
+    display: none;
+}
+
+.btn-dwn {
+    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5);
+}

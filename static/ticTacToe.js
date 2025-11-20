@@ -38,16 +38,15 @@ const pubsub = {
   }
 };
 
-
-function game() {
+// Game Handler
+(function game() {
 
     const player1 = createPlayer('Player 1', 1, 'x', true);
     const player2 = createPlayer('Player 2', 2, 'o', false);
     const players = [player1, player2]
 
     // TODO: write a coin toss mechanic to determine who goes first
-    let currentPlayer = player1
-
+    let currentPlayer = player1;
 
     // Ordered to favor center indices as having a higher chance of being included
     // in a winning pattern
@@ -70,7 +69,7 @@ function game() {
         const addMark = (index) => {
             let playerMark = currentPlayer.getMark();
             spaces[index] = playerMark;
-            pubsub.publish('boardChanged', (spaces))
+            pubsub.publish('boardChanged', (show()))
         }
 
         const checkIndex = (index) => {
@@ -78,31 +77,39 @@ function game() {
         }
         const size = () => {return spaces.length}
 
-        return {show, addMark, checkIndex, size}
+        const clearBoard = () => {
+            spaces = Array(9).fill(null);
+            return show()
+        }
+
+        return {show, addMark, checkIndex, size, clearBoard}
     })();
     // vertical wins    [0, 1, 2], [3, 4, 5], [6, 7, 8]
     // horizontal wins  [0, 3, 6], [1, 4, 7], [2, 5, 8]
     // diagonal wins    [0, 4, 8], [2, 4, 6]
 
 
-    function createPlayer(name, playerNum, mark, isTurn) {
+    function createPlayer(name, playerId, mark, isTurn) {
         let score = 0
 
         const getName = () => {return name}
         const getMark = () => {return mark}
         const getScore = () => {return score}
         const getTurn = () => {return isTurn}
-        const getPlayerNum = () => {return playerNum}
+        const getplayerId = () => {return playerId}
 
         const setScore = () => {
             score++;
-            pubsub.publish('scoreUpdate', currentPlayer)
             return score
         }
         const setTurn = () => {return isTurn = !isTurn}
 
+        const resetScore = () => {
+            score = 0;
+            return score
+        }
 
-        return {getName, getMark, getScore, getPlayerNum, setScore, getTurn, setTurn}
+        return {getName, getMark, getScore, getplayerId, setScore, getTurn, setTurn, resetScore}
     }
 
 
@@ -127,14 +134,6 @@ function game() {
             gameBoard.addMark(space);
             pubsub.publish('turnTaken', true)
         }
-
-        // if (checkWinState(boardState)) {
-        //     win()
-        // } else {
-        //     toggleTurn()
-        //     revealBoard()
-        //     displayPlayer()
-        // }
     }
 
 
@@ -155,7 +154,7 @@ function game() {
             let slot3 = boardState[k];
             if (slot1 && slot1 === slot2 && slot2 === slot3) {
                 win();
-                pubsub.publish('win', currentPlayer);
+                pubsub.publish('win', players);
             }
 
         }
@@ -164,16 +163,11 @@ function game() {
 
 
     function win() {
-        // alert(`${currentPlayer.getName()} wins!`)
         console.log(`${currentPlayer.getName()} wins!`);
         currentPlayer.setScore();
         // TODO:
         // Disable click event on board
     }
-
-    // function showScore(player) {
-    //     let 
-    // }
 
 
     function displayPlayer() {
@@ -187,6 +181,14 @@ function game() {
         }
     }
 
+    function resetGame() {
+        clearedBoard = gameBoard.clearBoard();
+        for (let player of players){
+            player.resetScore();
+        }
+    }
+
+    // Pubsub Subscriptions
     pubsub.subscribe('spaceClicked', (space) => {
         takeTurn(space);
     });
@@ -194,20 +196,26 @@ function game() {
     pubsub.subscribe('turnTaken', (data) => {
         checkWinState();
         toggleTurn()
+    });
+
+    pubsub.subscribe('btnPressed', (data) => {
+        if (data === 'reset'){
+            resetGame();
+            pubsub.publish('gameStateChange', {clearedBoard, players})
+        } else if (data === 'newGame') {
+            clearedBoard = gameBoard.clearBoard()
+            pubsub.publish('gameStateChange', {clearedBoard, players})
+        }
+        
     })
 
     return {takeTurn, revealBoard, showStats}
-}
+})();
 
-
-// newGameBtn.addEventListener('click', () => {
-//     gm = game()
-
-// })
-
-
-const uiManager = (function () {
+// UI Manager
+(function () {
     // Locate important html elements
+    const gameControlsElement = document.querySelector('.game-controls');
     const newGameBtn = document.querySelector('#new-game-btn');
     const resetBtn = document.querySelector('#reset-btn');
     const gameBoardElement = document.querySelector('#game-board');
@@ -220,35 +228,64 @@ const uiManager = (function () {
     let spaceIdx = target.dataset.spaceIdx;
     pubsub.publish("spaceClicked", spaceIdx)
     return spaceIdx
-    })
+    });
+
+    gameControlsElement.addEventListener('mousedown', (event) => {
+        let target = event.target;
+        target.classList.toggle('btn-dwn');
+    });
+
+    gameControlsElement.addEventListener('mouseup', (event) => {
+        let target = event.target;
+        target.classList.toggle('btn-dwn');
+        if(target.id === 'new-game-btn') {
+            pubsub.publish('btnPressed', 'newGame');
+        } else if (target.id === 'reset-btn') {
+            pubsub.publish('btnPressed', 'reset');
+        }
+        
+    });
 
     const markSpace = (board) => {
         for (let i = 0; i < board.length; i++){
+            let boardSpaceElement = document.querySelector(`#marker-space${i}`);
+            boardSpaceElement.classList.remove('x-marker', 'o-marker');
             if (board[i]) {
-                let boardSpaceElement = document.querySelector(`#marker-space${i}`);
-                boardSpaceElement.classList.remove('x-marker', 'o-marker');
                 boardSpaceElement.classList.toggle(`${board[i]}-marker`);
             }
         }};
 
     const updateScore = (player) => {
-        let playerNum = player.getPlayerNum();
-        let playerScore = document.querySelector(`#p${playerNum}-score`);
+        let id = extractPlayerId(player);
+        let playerScore = document.querySelector(`#p${id}-score`);
         playerScore.textContent = player.getScore()
     }
 
+    function extractPlayerId(player) {
+        return player.getplayerId()
+    }
+
+    // Pubsub Subscriptions
     pubsub.subscribe('boardChanged', (board) => {
         markSpace(board)
     });
 
-    pubsub.subscribe('win', (player) => {
-        updateScore(player);
+    pubsub.subscribe('win', (players) => {
+        players.forEach((player) => {
+            updateScore(player);
+        })
     });
 
-    return {markSpace}
+    pubsub.subscribe('gameStateChange', (payload) => {
+        // updateScore(payload.players);
+        payload.players.forEach((player) => {
+            updateScore(player);
+        })
+        markSpace(payload.clearedBoard);
+    })
 
 })();
 
 
 
-let gm = game()
+// let gm = game()
