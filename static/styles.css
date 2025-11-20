@@ -9,6 +9,7 @@ html, body {
 h1 {
     font-family: "Varela Round", sans-serif;
     font-size: 36pt;
+    margin-bottom: 5px;
 }
 
 #main-frame {
@@ -147,6 +148,15 @@ h1 {
 
 .o-marker::after {
     content: "O";
+}
+
+.turn-msg {
+    color: #821d30;
+    font-size: 16pt;
+}
+
+.o-turn-msg {
+    color: #41639b;
 }
 
 .o-marker {

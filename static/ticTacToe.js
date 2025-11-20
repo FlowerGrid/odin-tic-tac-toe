@@ -48,6 +48,7 @@ const pubsub = {
     const gameBoardElement = document.querySelector('#game-board');
     const p1Element = document.querySelector('#player1');
     const p2Element = document.querySelector('#player2');
+    const turnMsgElement = document.querySelector('.turn-msg');
 
     // Listenters
     gameBoardElement.addEventListener('click', (event) => {
@@ -111,14 +112,16 @@ const pubsub = {
         markSpace(payload.clearedBoard);
     })
 
-    pubsub.subscribe('turnChange', (data) => {
+    pubsub.subscribe('turnChange', (currentPlayer) => {
         for (let playerElement of [p1Element, p2Element]) {
             playerElement.classList.toggle('my-turn');
         }
+        turnMsgElement.textContent = `It's ${currentPlayer.getName()}'s turn`;
+        turnMsgElement.classList.toggle('o-turn-msg');
     })
 
-    pubsub.subscribe('coinToss', (id) => {
-        console.log(id)
+    pubsub.subscribe('coinToss', (currentPlayer) => {
+        let id = extractPlayerId(currentPlayer);
         for (let playerElement of [p1Element, p2Element]) {
             playerElement.classList.remove('my-turn');
         }
@@ -126,6 +129,12 @@ const pubsub = {
             p1Element.classList.toggle('my-turn');
         } else {
             p2Element.classList.toggle('my-turn');
+        }
+
+        turnMsgElement.textContent = `It's ${currentPlayer.getName()}'s turn`;
+        turnMsgElement.classList.remove('o-turn-msg');
+        if (id === 2) {
+            turnMsgElement.classList.toggle('o-turn-msg');
         }
     })
 
@@ -154,7 +163,7 @@ const pubsub = {
         }
         currentPlayer.setTurn();
 
-        pubsub.publish('coinToss', currentPlayer.getplayerId())
+        pubsub.publish('coinToss', currentPlayer);
         
         return currentPlayer
     }
