@@ -41,6 +41,7 @@ h1 {
     gap: 32px;
 }
 
+
 .control-item {
     font-family: "Varela Round", sans-serif;
     font-size: 14pt;
@@ -50,8 +51,14 @@ h1 {
     color: #F5F5F5;
     padding: 24px 80px;
     border: solid 2px #fdb73e;
-    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
 }
+
+.btn-dwn {
+    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
 
 .players-section {
     display: flex;
@@ -76,6 +83,11 @@ h1 {
 
 .player-name {
     font-family: "Slabo 27px", serif;
+}
+
+.my-turn {
+    font-size: 36pt;
+    font-weight: bold;
 }
 
 #player1 {
@@ -145,6 +157,3 @@ h1 {
     display: none;
 }
 
-.btn-dwn {
-    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5);
-}
