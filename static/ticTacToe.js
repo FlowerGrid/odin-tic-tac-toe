@@ -100,18 +100,31 @@ const pubsub = {
     pubsub.subscribe('boardChanged', handleBoardChange);
 
 
-    function winHandler(players) {
-        players.forEach((player) => {
-            updateScore(player);
-            if (player.getTurn()) {
-                turnMsgElement.textContent = `${player.getName()} WINS!!!`;
-            }
-        })
+    // function winHandler(players) {
+    //     players.forEach((player) => {
+    //         updateScore(player);
+    //         if (player.getTurn()) {
+    //             turnMsgElement.textContent = `${player.getName()} WINS!!!`;
+    //         }
+    //     })   
+    // }
+    // pubsub.subscribe('win', winHandler);
 
-        
+    function endGameHandler(data) {
+        if (typeof data === 'string') {
+            turnMsgElement.textContent = data
+            turnMsgElement.classList.remove('red', 'blue')
+        } else if (Array.isArray(data)) {
+            console.log('win state')
+            data.forEach((player) => {
+                updateScore(player);
+                if (player.getTurn()) {
+                    turnMsgElement.textContent = `${player.getName()} WINS!!!`;
+                }
+            })
+        }
     }
-    pubsub.subscribe('win', winHandler);
-
+    pubsub.subscribe('gameEnd', endGameHandler)
 
     function handleGameStateChange(payload) {
         // updateScore(payload.players);
@@ -277,7 +290,6 @@ const pubsub = {
         }
     }
 
-
     function revealBoard() {
         console.log(gameBoard.show());
     }
@@ -297,21 +309,27 @@ const pubsub = {
                 win();
             }
         }
+
+        if (boardState.every(s => s !== null)){
+            gameOn = false;
+            pubsub.publish('gameEnd', 'Draw')
+        }
+
         if (gameOn){
             toggleTurn()
         }
-        
     }
 
 
     function win() {
         console.log(`${currentPlayer.getName()} wins!`);
         currentPlayer.setScore();
-        pubsub.publish('win', players);
+        // pubsub.publish('win', players);
         gameOn = false;
+        pubsub.publish('gameEnd', players);
+        
         // TODO:
         // Disable click event on board
-
     }
 
 
