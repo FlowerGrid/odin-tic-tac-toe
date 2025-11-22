@@ -93,9 +93,6 @@ const pubsub = {
         return player.getplayerId()
     }
 
-
-
-
     // Pubsub Subscriptions
     function handleBoardChange(board) {
         markSpace(board)
@@ -106,7 +103,12 @@ const pubsub = {
     function winHandler(players) {
         players.forEach((player) => {
             updateScore(player);
+            if (player.getTurn()) {
+                turnMsgElement.textContent = `${player.getName()} WINS!!!`;
+            }
         })
+
+        
     }
     pubsub.subscribe('win', winHandler);
 
@@ -262,14 +264,13 @@ const pubsub = {
 
     function takeTurn(space) {
 
-        if(gameBoard.checkIndex(space) || space > 8) {
+        if (!gameOn){
+            return
+        } else if(gameBoard.checkIndex(space) || space > 8) {
             alert("Please choose an empty space")
             revealBoard()
             displayPlayer()
             return                    
-        } else if(!gameOn) {
-            // alert('Press "New Game" to play again')
-            return
         } else {
             gameBoard.addMark(space);
             pubsub.publish('turnTaken', gameBoard.show())
@@ -294,9 +295,7 @@ const pubsub = {
             let slot3 = boardState[k];
             if (slot1 && slot1 === slot2 && slot2 === slot3) {
                 win();
-
             }
-
         }
         if (gameOn){
             toggleTurn()
@@ -357,9 +356,5 @@ const pubsub = {
     return {takeTurn, revealBoard, showStats}
     
 })();
-
-
-
-
 
 // let gm = game()
