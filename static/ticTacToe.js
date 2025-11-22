@@ -5,7 +5,7 @@
 // - Need to add event listeners to menu buttons and marker spaces ✅
 // - Clicking on a marker space indexes into that space on the board array and 
 //   fills it with that player's marker ✅
-// - Need to display whose turn it is
+// - Need to display whose turn it is ✅
 //   - I might highlight the player's name in the menu or simply write it above
 //     the game board
 // - Somehow need to let the players enter their own names
@@ -19,7 +19,7 @@ const pubsub = {
     this.events[eventName] = this.events[eventName] || [];
     this.events[eventName].push(fn);
   },
-  ounsubscribe: function(eventName, fn) {
+  unsubscribe: function(eventName, fn) {
     if (this.events[eventName]) {
       for (var i = 0; i < this.events[eventName].length; i++) {
         if (this.events[eventName][i] === fn) {
@@ -93,34 +93,45 @@ const pubsub = {
         return player.getplayerId()
     }
 
-    // Pubsub Subscriptions
-    pubsub.subscribe('boardChanged', (board) => {
-        markSpace(board)
-    });
 
-    pubsub.subscribe('win', (players) => {
+
+
+    // Pubsub Subscriptions
+    function handleBoardChange(board) {
+        markSpace(board)
+    }
+    pubsub.subscribe('boardChanged', handleBoardChange);
+
+
+    function winHandler(players) {
         players.forEach((player) => {
             updateScore(player);
         })
-    });
+    }
+    pubsub.subscribe('win', winHandler);
 
-    pubsub.subscribe('gameStateChange', (payload) => {
+
+    function handleGameStateChange(payload) {
         // updateScore(payload.players);
         payload.players.forEach((player) => {
             updateScore(player);
         })
         markSpace(payload.clearedBoard);
-    })
+    }
+    pubsub.subscribe('gameStateChange', handleGameStateChange)
 
-    pubsub.subscribe('turnChange', (currentPlayer) => {
+
+    function handleTurnChange(currentPlayer) {
         for (let playerElement of [p1Element, p2Element]) {
             playerElement.classList.toggle('my-turn');
         }
         turnMsgElement.textContent = `It's ${currentPlayer.getName()}'s turn`;
-        turnMsgElement.classList.toggle('o-turn-msg');
-    })
+        turnMsgElement.classList.toggle('blue');
+    }
+    pubsub.subscribe('turnChange', handleTurnChange)
 
-    pubsub.subscribe('coinToss', (currentPlayer) => {
+
+    function handleCoinToss(currentPlayer) {
         let id = extractPlayerId(currentPlayer);
         for (let playerElement of [p1Element, p2Element]) {
             playerElement.classList.remove('my-turn');
@@ -132,11 +143,12 @@ const pubsub = {
         }
 
         turnMsgElement.textContent = `It's ${currentPlayer.getName()}'s turn`;
-        turnMsgElement.classList.remove('o-turn-msg');
+        turnMsgElement.classList.remove('blue');
         if (id === 2) {
-            turnMsgElement.classList.toggle('o-turn-msg');
+            turnMsgElement.classList.toggle('blue');
         }
-    })
+    }
+    pubsub.subscribe('coinToss', handleCoinToss)
 
 })();
 
@@ -144,7 +156,7 @@ const pubsub = {
 // Game Handler
 (function game() {
 
-    let status = false;
+    let gameOn = true;
     const player1 = createPlayer('Player 1', 1, 'x', false);
     const player2 = createPlayer('Player 2', 2, 'o', false);
     const players = [player1, player2]
@@ -169,8 +181,6 @@ const pubsub = {
     }
 
     currentPlayer = coinToss();
-    console.log(currentPlayer.getName())
-    console.log(currentPlayer.getTurn())
 
 
     // Ordered to favor center indices as having a higher chance of being included
@@ -257,9 +267,12 @@ const pubsub = {
             revealBoard()
             displayPlayer()
             return                    
+        } else if(!gameOn) {
+            // alert('Press "New Game" to play again')
+            return
         } else {
             gameBoard.addMark(space);
-            pubsub.publish('turnTaken', true)
+            pubsub.publish('turnTaken', gameBoard.show())
         }
     }
 
@@ -281,19 +294,25 @@ const pubsub = {
             let slot3 = boardState[k];
             if (slot1 && slot1 === slot2 && slot2 === slot3) {
                 win();
-                pubsub.publish('win', players);
+
             }
 
         }
-        return false
+        if (gameOn){
+            toggleTurn()
+        }
+        
     }
 
 
     function win() {
         console.log(`${currentPlayer.getName()} wins!`);
         currentPlayer.setScore();
+        pubsub.publish('win', players);
+        gameOn = false;
         // TODO:
         // Disable click event on board
+
     }
 
 
@@ -316,16 +335,12 @@ const pubsub = {
     }
 
     // Pubsub Subscriptions
-    pubsub.subscribe('spaceClicked', (space) => {
-        takeTurn(space);
-    });
+    pubsub.subscribe('spaceClicked', takeTurn);
 
-    pubsub.subscribe('turnTaken', (data) => {
-        checkWinState();
-        toggleTurn()
-    });
+    pubsub.subscribe('turnTaken', checkWinState)
 
-    pubsub.subscribe('btnPressed', (data) => {
+
+    function handleButtonPresses(data) {
         if (data === 'reset'){
             resetGame();
             pubsub.publish('gameStateChange', {clearedBoard, players})
@@ -333,8 +348,11 @@ const pubsub = {
             clearedBoard = gameBoard.clearBoard()
             pubsub.publish('gameStateChange', {clearedBoard, players})
         }
+        gameOn = true;
         coinToss()
-    })
+    }
+    pubsub.subscribe('btnPressed', handleButtonPresses)
+
 
     return {takeTurn, revealBoard, showStats}
     

@@ -1,6 +1,6 @@
 html, body {
     font-family: "Roboto";
-    background-color: aqua;
+    background-color: #F5F5F5;
     padding: 0;
     margin: 0;
     cursor: default;
@@ -8,8 +8,9 @@ html, body {
 
 h1 {
     font-family: "Varela Round", sans-serif;
-    font-size: 36pt;
+    font-size: 42pt;
     margin-bottom: 5px;
+    color: #211d1e;
 }
 
 #main-frame {
@@ -52,12 +53,13 @@ h1 {
     color: #F5F5F5;
     padding: 24px 80px;
     border: solid 2px #fdb73e;
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
 }
 
 .btn-dwn {
-    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5);
+    /* box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5); */
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -69,6 +71,7 @@ h1 {
 }
 
 .players-section p {
+    color: #211d1e;
     margin: 0;
     font-size: 16pt;
     /* padding: 0 1rem; */
@@ -124,7 +127,7 @@ h1 {
     grid-template-columns: repeat(3, 180px);
     grid-template-rows: repeat(3, 180px);
     gap: 1rem;
-    background-color: black;
+    background-color: #211d1e;
     margin: 2rem;
     box-sizing: border-box;
 }
@@ -152,11 +155,7 @@ h1 {
 
 .turn-msg {
     color: #821d30;
-    font-size: 16pt;
-}
-
-.o-turn-msg {
-    color: #41639b;
+    font-size: 22pt;
 }
 
 .o-marker {
@@ -167,3 +166,10 @@ h1 {
     display: none;
 }
 
+.blue {
+    color: #41639b;   
+}
+
+.red {
+    color: #821d30;
+}
