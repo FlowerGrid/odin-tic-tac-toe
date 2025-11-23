@@ -95,8 +95,12 @@ const pubsub = {
                 pNum = name.dataset.playerNum;
                 playerNames[`${pNum}`] = name.value;
             })
-            pubsub.publish('btnPressed', playerNames);
-            popupElement.classList.toggle('hidden-element');
+            if (!playerNames['1'] || !playerNames['2']) {
+                alert('Please fill in player names.')
+            } else {
+                pubsub.publish('btnPressed', playerNames);
+                popupElement.classList.toggle('hidden-element');
+            }
         }
     })
 
@@ -145,6 +149,13 @@ const pubsub = {
         // updateScore(payload.players);
         payload.players.forEach((player) => {
             updateScore(player);
+            if (player.getplayerId() === 1) {
+                let pName = p1Element.querySelector('.player-name');
+                pName.textContent = player.getName();
+            } else {
+                let pName = p2Element.querySelector('.player-name');
+                pName.textContent = player.getName();
+            }
         })
         markSpace(payload.clearedBoard);
     }
@@ -179,6 +190,10 @@ const pubsub = {
         }
     }
     pubsub.subscribe('coinToss', handleCoinToss)
+
+    pubsub.subscribe('gameBegin', (data) => {
+        document.querySelector('#cancel-btn').classList.remove('hidden-element')
+    })
 
 })();
 
@@ -364,6 +379,7 @@ const pubsub = {
             player.setName(playerNamesObj[pIdStr])
         }
         gameOn = true;
+        pubsub.publish('gameBegin', 'moPawpuhl');
     }
 
     // Pubsub Subscriptions
