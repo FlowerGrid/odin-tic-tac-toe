@@ -14,7 +14,19 @@
   <title>Odin Tic Tac Toe</title>
 </head>
 <body>
-  <div id="winner-announcement"></div>
+  <div class="popup-container">
+    <div id="name-entry-window">
+      <h2>Enter Player Names</h2>
+      <label for="player-1-name">Player 1 Name</label>
+      <input type="text" class="player-name-entry" id="player-1-name" data-player-num="1" maxlength="20" placeholder="Player 1"></input>
+      <label for="player-2-name">Player 2 Name</label>
+      <input type="text" class="player-name-entry" id="player-2-name" data-player-num="2" maxlength="20" placeholder="Player 2"></input>
+      <div class="popup-btns">
+        <div class="control-item" id="start-game">Start Game</div>
+        <div class="control-item" id="cancel-btn">Cancel</div>
+      </div>
+    </div>
+  </div>
   <div id="main-frame">
     <!-- menu -->
     <div id="menu-panel">
@@ -32,7 +44,7 @@
           </div>
         </div>
         <div class="game-controls">
-          <div class="control-item btn-up" id="new-game-btn">New Game</div>
+          <div class="control-item btn-up" id="new-game-btn">Play</div>
           <div class="control-item btn-up" id="reset-btn">Reset</div>
         </div>
       </div>

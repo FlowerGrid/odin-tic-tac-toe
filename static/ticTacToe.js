@@ -49,6 +49,8 @@ const pubsub = {
     const p1Element = document.querySelector('#player1');
     const p2Element = document.querySelector('#player2');
     const turnMsgElement = document.querySelector('.turn-msg');
+    const popupElement = document.querySelector('.popup-container')
+    const nameEntryElementBtnsContainer = document.querySelector('.popup-btns');
 
     // Listenters
     gameBoardElement.addEventListener('click', (event) => {
@@ -69,10 +71,34 @@ const pubsub = {
         if(target.id === 'new-game-btn') {
             pubsub.publish('btnPressed', 'newGame');
         } else if (target.id === 'reset-btn') {
+            popupElement.classList.toggle('hidden-element');
             pubsub.publish('btnPressed', 'reset');
         }
         
     });
+
+    nameEntryElementBtnsContainer.addEventListener('mousedown', (event) => {
+        let target = event.target;
+        target.classList.toggle('btn-dwn');
+    })
+
+    nameEntryElementBtnsContainer.addEventListener('mouseup', (event) => {
+        let target = event.target;
+        target.classList.toggle('btn-dwn');
+
+        if (target.id === 'cancel-btn') {
+            popupElement.classList.toggle('hidden-element')
+        } else if (target.id === 'start-game') {
+            let playerNames = {};
+            let nameEntries = popupElement.querySelectorAll('input')
+            nameEntries.forEach((name) => {
+                pNum = name.dataset.playerNum;
+                playerNames[`${pNum}`] = name.value;
+            })
+            pubsub.publish('btnPressed', playerNames);
+            popupElement.classList.toggle('hidden-element');
+        }
+    })
 
     const markSpace = (board) => {
         for (let i = 0; i < board.length; i++){
@@ -98,17 +124,6 @@ const pubsub = {
         markSpace(board)
     }
     pubsub.subscribe('boardChanged', handleBoardChange);
-
-
-    // function winHandler(players) {
-    //     players.forEach((player) => {
-    //         updateScore(player);
-    //         if (player.getTurn()) {
-    //             turnMsgElement.textContent = `${player.getName()} WINS!!!`;
-    //         }
-    //     })   
-    // }
-    // pubsub.subscribe('win', winHandler);
 
     function endGameHandler(data) {
         if (typeof data === 'string') {
@@ -171,7 +186,7 @@ const pubsub = {
 // Game Handler
 (function game() {
 
-    let gameOn = true;
+    let gameOn = false;
     const player1 = createPlayer('Player 1', 1, 'x', false);
     const player2 = createPlayer('Player 2', 2, 'o', false);
     const players = [player1, player2]
@@ -195,7 +210,7 @@ const pubsub = {
         return currentPlayer
     }
 
-    currentPlayer = coinToss();
+    // currentPlayer = coinToss();
 
 
     // Ordered to favor center indices as having a higher chance of being included
@@ -248,6 +263,7 @@ const pubsub = {
         const getTurn = () => {return isTurn}
         const getplayerId = () => {return playerId}
 
+        const setName = (newName) => {return name = newName}
         const setScore = () => {
             score++;
             return score
@@ -260,7 +276,7 @@ const pubsub = {
             return score
         }
 
-        return {getName, getMark, getScore, getplayerId, setScore, getTurn, setTurn, resetTurn, resetScore}
+        return {getName, getMark, getScore, getplayerId, setName, setScore, getTurn, setTurn, resetTurn, resetScore}
     }
 
 
@@ -324,12 +340,8 @@ const pubsub = {
     function win() {
         console.log(`${currentPlayer.getName()} wins!`);
         currentPlayer.setScore();
-        // pubsub.publish('win', players);
         gameOn = false;
         pubsub.publish('gameEnd', players);
-        
-        // TODO:
-        // Disable click event on board
     }
 
 
@@ -344,11 +356,14 @@ const pubsub = {
         }
     }
 
-    function resetGame() {
+    function resetGame(playerNamesObj) {
         clearedBoard = gameBoard.clearBoard();
         for (let player of players){
             player.resetScore();
+            pIdStr = player.getplayerId().toString()
+            player.setName(playerNamesObj[pIdStr])
         }
+        gameOn = true;
     }
 
     // Pubsub Subscriptions
@@ -358,8 +373,8 @@ const pubsub = {
 
 
     function handleButtonPresses(data) {
-        if (data === 'reset'){
-            resetGame();
+        if (typeof data === 'object'){
+            resetGame(data);
             pubsub.publish('gameStateChange', {clearedBoard, players})
         } else if (data === 'newGame') {
             clearedBoard = gameBoard.clearBoard()

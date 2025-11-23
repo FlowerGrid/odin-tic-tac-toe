@@ -4,6 +4,7 @@ html, body {
     padding: 0;
     margin: 0;
     cursor: default;
+    position: relative;
 }
 
 h1 {
@@ -11,6 +12,10 @@ h1 {
     font-size: 42pt;
     margin-bottom: 5px;
     color: #211d1e;
+}
+
+h2 {
+    font-family: "Varela Round", sans-serif;
 }
 
 #main-frame {
@@ -87,6 +92,9 @@ h1 {
 
 .player-name {
     font-family: "Slabo 27px", serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .my-turn {
@@ -120,6 +128,32 @@ h1 {
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    /* position: relative; */
+}
+
+#name-entry-window {
+    /* position: absolute; */
+    /* top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+    min-height: 300px;
+    min-width: 600px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 2rem;
+    background-color: #F5F5F5;
+    border: #821d30 8px solid;
+    border-radius: 10px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+#name-entry-window input {
+    font-size: 16pt;
+    padding: .5rem 1rem;
+    margin-bottom: 24px;
+    margin-top: 4px;
 }
 
 #game-board {
@@ -162,14 +196,42 @@ h1 {
     color: #41639b;
 }
 
-#winner-announcement {
-    display: none;
-}
-
 .blue {
     color: #41639b;   
 }
 
 .red {
     color: #821d30;
+}
+
+
+
+.popup-container {
+    position: fixed;
+    
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #F5F5F540;
+    backdrop-filter: blur(2px);
+    /* z-index: 9999; */
+}
+
+.popup-btns {
+    display: flex;
+    justify-content: space-around;
+}
+
+.popup-btns .control-item {
+    /* padding: 12px; */
+}
+
+.hidden-element {
+    display: none;
 }
