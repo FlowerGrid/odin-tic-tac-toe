@@ -25,7 +25,7 @@ h2 {
 }
 
 #menu-panel {
-    background-color: mediumaquamarine;
+    background-color: #1d826f;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -67,18 +67,23 @@ h2 {
     box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
 }
 
-
 .players-section {
     display: flex;
     flex-direction: column;
     align-self: stretch;
     gap: .5rem;
+    text-shadow:
+        1px 0px 0 #211d1e,
+        0px -1px 0 #211d1e,
+        -1px 0px 0 #211d1e,
+        0px 1px #211d1e;
 }
 
 .players-section p {
     color: #211d1e;
     margin: 0;
     font-size: 16pt;
+    text-shadow: none;
     /* padding: 0 1rem; */
 }
 
@@ -88,6 +93,7 @@ h2 {
     flex-direction: column;
     padding: 0 1rem;
     margin-bottom: 1rem;
+    color: #F5F5F5;
 }
 
 .player-name {
@@ -103,11 +109,17 @@ h2 {
 }
 
 #player1 {
-    color: #821d30;
+    /* color: #821d30; */
+    text-shadow:
+        -2px 2px 0 #821d30,
+        -3px 3px #211d1e;
 }
 
 #player2 {
-    color: #41639b;
+    /* color: #41639b; */
+    text-shadow: 
+        -2px 2px 0 #41639b,
+        -3px 3px #211d1e;
 }
 
 .player-score {
